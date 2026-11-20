@@ -21,6 +21,10 @@ backend/venv/
 backend/.env
 frontend/.env.local
 
+# Sensitive files
+vercel-recovery-codes*
+*.recovery-codes*
+
 # OS files
 .DS_Store
 Thumbs.db
