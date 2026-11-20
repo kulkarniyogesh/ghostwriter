@@ -1,0 +1,15 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Black Formatter on Backend Save",
+      "trigger": "PostFileSave",
+      "description": "Auto-format Python files with Black formatter on save",
+      "matcher": "backend/.*\\.py$",
+      "action": {
+        "type": "command",
+        "command": "cd backend && python -m black \"${filePath}\" 2>&1"
+      }
+    }
+  ]
+}

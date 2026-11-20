@@ -1,0 +1,15 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "ESLint on Frontend Save",
+      "trigger": "PostFileSave",
+      "description": "Auto-lint and fix JavaScript/JSX files in the frontend on save",
+      "matcher": "frontend/.*\\.(jsx|js)$",
+      "action": {
+        "type": "command",
+        "command": "cd frontend && npx eslint --fix \"${filePath}\" 2>&1"
+      }
+    }
+  ]
+}

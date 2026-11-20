@@ -1,0 +1,14 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Run Tests After Task Completion",
+      "trigger": "PostTaskExec",
+      "description": "Run backend test suite automatically after each spec task completes",
+      "action": {
+        "type": "command",
+        "command": "cd backend && python -m pytest tests/ -q 2>&1 | tail -20"
+      }
+    }
+  ]
+}

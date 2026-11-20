@@ -1,0 +1,36 @@
+# Dependencies
+node_modules/
+frontend/node_modules/
+
+# Build outputs
+frontend/dist/
+frontend/.vite/
+
+# Python
+backend/__pycache__/
+backend/**/__pycache__/
+**/__pycache__/
+backend/*.pyc
+**/*.pyc
+backend/.venv/
+backend/venv/
+*.egg-info/
+
+# Environment variables (NEVER commit secrets)
+.env
+backend/.env
+frontend/.env.local
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# IDE
+.vscode/
+*.swp
+
+# DO NOT ADD .kiro/ HERE — required for hackathon submission
+# The .kiro/ directory MUST remain visible in the repo
