@@ -36,8 +36,7 @@ export default function ProcessingPage({ repoUrl, onComplete, onError }) {
 
   useEffect(() => {
     if (status === 'complete' && result) {
-      // Small delay so user sees 100%
-      setTimeout(() => onComplete(result), 800)
+      setTimeout(() => onComplete(result, filesRef.current), 800)
     }
   }, [status, result])
 

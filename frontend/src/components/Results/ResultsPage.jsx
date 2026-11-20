@@ -13,7 +13,7 @@ const TABS = [
   { id: 'warnings', label: '⚠️ Warnings' },
 ]
 
-export default function ResultsPage({ result, onReset }) {
+export default function ResultsPage({ result, originalFiles = [], onReset }) {
   const [activeTab, setActiveTab] = useState('report')
   const [showTerminal, setShowTerminal] = useState(false)
 
@@ -53,7 +53,7 @@ export default function ResultsPage({ result, onReset }) {
       <div className="flex-1 min-h-0">
         <SplitCodePanel
           migratedFiles={result.migrated_files || []}
-          originalFiles={[]}
+          originalFiles={originalFiles}
           targetLanguage={result.target_language || 'python'}
         />
       </div>

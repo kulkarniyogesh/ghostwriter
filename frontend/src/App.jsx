@@ -14,20 +14,23 @@ export default function App() {
   const [screen, setScreen] = useState(SCREENS.LANDING)
   const [repoUrl, setRepoUrl] = useState('')
   const [migrationResult, setMigrationResult] = useState(null)
+  const [originalFiles, setOriginalFiles] = useState([])
 
   const handleResurrect = (url) => {
     setRepoUrl(url)
     setScreen(SCREENS.PROCESSING)
   }
 
-  const handleMigrationComplete = (result) => {
+  const handleMigrationComplete = (result, fetchedFiles) => {
     setMigrationResult(result)
+    setOriginalFiles(fetchedFiles || [])
     setScreen(SCREENS.RESULTS)
   }
 
   const handleReset = () => {
     setRepoUrl('')
     setMigrationResult(null)
+    setOriginalFiles([])
     setScreen(SCREENS.LANDING)
   }
 
@@ -46,6 +49,7 @@ export default function App() {
       {screen === SCREENS.RESULTS && (
         <ResultsPage
           result={migrationResult}
+          originalFiles={originalFiles}
           onReset={handleReset}
         />
       )}

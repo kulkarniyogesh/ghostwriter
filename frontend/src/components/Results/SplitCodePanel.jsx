@@ -11,7 +11,9 @@ export default function SplitCodePanel({ migratedFiles, originalFiles, targetLan
   const [selectedIndex, setSelectedIndex] = useState(0)
 
   const current = migratedFiles[selectedIndex]
-  const original = originalFiles?.[selectedIndex]
+  const original = originalFiles?.find(
+    (f) => f.path === current?.original_path
+  ) || originalFiles?.[selectedIndex]
 
   if (!current) return null
 
@@ -54,7 +56,7 @@ export default function SplitCodePanel({ migratedFiles, originalFiles, targetLan
             <Editor
               height="100%"
               language="plaintext"
-              value={original?.content || '// Original file not available'}
+              value={original?.content || '// Original source not available\n// (fetch the repo again to see original code)'}
               theme="vs-dark"
               options={{
                 readOnly: true,
