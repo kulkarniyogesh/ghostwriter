@@ -1,24 +1,24 @@
 const EXAMPLES = [
   {
-    label: 'COBOL Payroll System',
-    year: '1987',
-    url: 'https://github.com/ghusta/cobol-example-world-population',
+    label: 'COBOL Accounting System',
+    year: '1990s',
+    url: 'https://github.com/tjsingh85/cobol-accounting-system',
     lang: 'COBOL',
     color: 'text-amber-400',
   },
   {
-    label: 'Legacy Fortran Science',
-    year: '1982',
-    url: 'https://github.com/mhearne-usgs/neic-legacy',
-    lang: 'Fortran',
-    color: 'text-purple-400',
+    label: 'COBOL Examples Library',
+    year: '1980s',
+    url: 'https://github.com/dsfb/Projetos-Cobol',
+    lang: 'COBOL',
+    color: 'text-amber-400',
   },
   {
-    label: 'Classic ASP App',
-    year: '1999',
-    url: 'https://github.com/nickhealthy/classic-asp-example',
-    lang: 'ASP',
-    color: 'text-green-400',
+    label: 'GnuCOBOL Contrib',
+    year: '1990s',
+    url: 'https://github.com/rupurt/GnuCOBOL-Contrib',
+    lang: 'COBOL',
+    color: 'text-amber-400',
   },
 ]
 

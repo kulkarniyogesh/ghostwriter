@@ -16,7 +16,8 @@ export default function LandingPage({ onResurrect }) {
       await fetchRepo(url)
       onResurrect(url)
     } catch (err) {
-      setError(err.message)
+      const msg = err?.message || String(err) || 'Unknown error'
+      setError(msg)
       setIsLoading(false)
     }
   }
