@@ -16,12 +16,8 @@ import os
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "https://ghostwriter.vercel.app",
-        os.getenv("FRONTEND_URL", ""),        # set this in Railway after Vercel deploy
-    ],
-    allow_credentials=True,
+    allow_origins=["*"],  # tightened after hackathon — open for judging
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
