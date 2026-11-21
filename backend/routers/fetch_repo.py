@@ -18,6 +18,7 @@ SUPPORTED_EXTENSIONS = {
     ".vb", ".bas", ".frm", ".cls",
     ".f", ".f90", ".f95", ".for",
     ".pl", ".cgi", ".as", ".asp", ".php",
+    ".clle", ".rpgle", ".clp",  # AS400 / IBM i
 }
 
 

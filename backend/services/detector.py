@@ -24,6 +24,9 @@ EXTENSION_MAP = {
     ".as": "ActionScript",
     ".asp": "ClassicASP",
     ".php": "PHP",
+    ".clle": "COBOL",   # AS400 ILE COBOL/CL
+    ".rpgle": "COBOL",  # AS400 RPG
+    ".clp": "COBOL",    # AS400 CL Program
 }
 
 ERA_MARKERS = {
