@@ -1,25 +1,30 @@
 import { useState, useRef, useCallback } from 'react'
 
 /**
- * usePyodide — load Pyodide on demand and run Python code in-browser.
- * Pyodide is loaded from CDN only when first needed (not on page load).
- * Execution is sandboxed inside WebAssembly — no filesystem or network access.
+ * usePyodide — run simple Python scripts in-browser via Pyodide.
+ * Interactive programs (using input()) are detected and skipped safely.
+ * Pyodide loads from CDN only when first needed.
  */
 export default function usePyodide() {
   const pyodideRef = useRef(null)
   const [isLoading, setIsLoading] = useState(false)
   const [isRunning, setIsRunning] = useState(false)
-  const [output, setOutput] = useState([]) // [{ type: 'stdout'|'stderr'|'info', text }]
+  const [output, setOutput] = useState([])
   const [error, setError] = useState(null)
+
+  const addLine = useCallback((type, text) => {
+    setOutput((prev) => [...prev, { type, text }])
+  }, [])
+
+  const isInteractive = (code) => {
+    return /\binput\s*\(/.test(code) || /\bgetpass\s*\(/.test(code)
+  }
 
   const loadPyodide = useCallback(async () => {
     if (pyodideRef.current) return pyodideRef.current
-
     setIsLoading(true)
     setError(null)
-
     try {
-      // Dynamically inject Pyodide script from CDN
       if (!window.loadPyodide) {
         await new Promise((resolve, reject) => {
           const script = document.createElement('script')
@@ -32,12 +37,6 @@ export default function usePyodide() {
 
       const pyodide = await window.loadPyodide({
         indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.26.4/full/',
-        stdout: (text) => {
-          setOutput((prev) => [...prev, { type: 'stdout', text }])
-        },
-        stderr: (text) => {
-          setOutput((prev) => [...prev, { type: 'stderr', text }])
-        },
       })
 
       pyodideRef.current = pyodide
@@ -56,74 +55,54 @@ export default function usePyodide() {
     setIsRunning(true)
 
     try {
+      // Detect interactive programs — can't run without stdin
+      if (isInteractive(code)) {
+        addLine('info', '$ python main.py')
+        addLine('stdout', '# This program uses input() — interactive mode not supported in browser.')
+        addLine('stdout', '# Running in demo mode: showing program structure only.\n')
+
+        // Extract and show print statements and function names as a dry run
+        const prints = [...code.matchAll(/print\s*\((.*?)\)/g)].slice(0, 10)
+        if (prints.length > 0) {
+          addLine('stdout', '# Sample output this program would produce:')
+          prints.forEach(([, content]) => {
+            const cleaned = content.replace(/['"]/g, '').replace(/f?["']|["']/g, '')
+            if (cleaned.trim()) addLine('stdout', cleaned.trim())
+          })
+        }
+
+        addLine('info', '\n# Download the ZIP to run this program locally:')
+        addLine('info', '# python main.py')
+        return
+      }
+
       const pyodide = await loadPyodide()
       if (!pyodide) return
 
-      setOutput([{ type: 'info', text: '$ python main.py' }])
+      addLine('info', '$ python main.py')
 
-      // Patch input() to return empty string — stdin not available in WebAssembly
-      await pyodide.runPythonAsync(`
-import sys, io, builtins
+      // Capture stdout/stderr
+      pyodide.setStdout({ batched: (text) => addLine('stdout', text) })
+      pyodide.setStderr({ batched: (text) => addLine('stderr', text) })
 
-_stdout_lines = []
-_stderr_lines = []
-
-class _Capture(io.StringIO):
-    def __init__(self, store):
-        super().__init__()
-        self._store = store
-    def write(self, s):
-        if s and s != '\\n':
-            self._store.append(s)
-        return len(s)
-
-sys.stdout = _Capture(_stdout_lines)
-sys.stderr = _Capture(_stderr_lines)
-
-# Replace input() so interactive programs don't crash
-_original_input = builtins.input
-def _safe_input(prompt=''):
-    if prompt:
-        _stdout_lines.append(str(prompt))
-    return ''
-builtins.input = _safe_input
-      `)
-
-      // Run the user code
       try {
         await pyodide.runPythonAsync(code)
       } catch (pyErr) {
-        setOutput((prev) => [...prev, { type: 'stderr', text: String(pyErr) }])
+        const msg = String(pyErr)
+        // Filter out noise, show clean error
+        const clean = msg.split('\n').filter(l =>
+          !l.includes('_pyodide') && !l.includes('CodeRunner')
+        ).join('\n').trim()
+        addLine('stderr', clean || msg)
       }
 
-      // Collect captured output
-      const stdoutLines = await pyodide.runPythonAsync('list(_stdout_lines)')
-      const stderrLines = await pyodide.runPythonAsync('list(_stderr_lines)')
-
-      stdoutLines.toJs().forEach((line) =>
-        setOutput((prev) => [...prev, { type: 'stdout', text: line }])
-      )
-      stderrLines.toJs().forEach((line) =>
-        setOutput((prev) => [...prev, { type: 'stderr', text: line }])
-      )
-
-      // Reset
-      await pyodide.runPythonAsync(`
-sys.stdout = sys.__stdout__
-sys.stderr = sys.__stderr__
-builtins.input = _original_input
-      `)
-
-      setOutput((prev) => [
-        ...prev,
-        { type: 'info', text: `\nProcess finished.` },
-      ])
+      addLine('info', '\nProcess finished.')
     } catch (err) {
       setError(err.message)
     } finally {
       setIsRunning(false)
     }
-  }, [loadPyodide])
+  }, [loadPyodide, addLine])
 
   const clearOutput = useCallback(() => {
     setOutput([])

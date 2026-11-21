@@ -51,15 +51,14 @@ export default function LiveTerminal({ migratedFiles, onClose }) {
           <button
             onClick={handleRun}
             disabled={isLoading || isRunning || !runnable}
-            className={`flex items-center gap-1.5 px-3 py-1 rounded text-xs font-medium transition-all ${
-              isLoading
+            className={`flex items-center gap-1.5 px-3 py-1 rounded text-xs font-medium transition-all ${isLoading
                 ? 'bg-[#1A1A2E] text-[#8892A4] cursor-wait'
                 : isRunning
                   ? 'bg-[#00FF88]/10 text-[#00FF88] cursor-wait'
                   : runnable
                     ? 'bg-[#00FF88]/15 text-[#00FF88] hover:bg-[#00FF88]/25 cursor-pointer'
                     : 'bg-[#1A1A2E] text-[#8892A4] cursor-not-allowed opacity-50'
-            }`}
+              }`}
           >
             {isLoading ? (
               <>
@@ -106,15 +105,15 @@ export default function LiveTerminal({ migratedFiles, onClose }) {
 
         {isLoading && (
           <span className="text-[#00D4FF]/60 animate-pulse">
-            Loading Python runtime (Pyodide)... this takes ~4 seconds the first time
+            Loading Python runtime... (~4s first time)
           </span>
         )}
 
         {output.map((line, i) => (
           <div key={i} className={
             line.type === 'stderr' ? 'text-[#FF4D6D]' :
-            line.type === 'info'   ? 'text-[#8892A4]' :
-                                     'text-[#00FF88]'
+              line.type === 'info' ? 'text-[#8892A4]' :
+                'text-[#00FF88]'
           }>
             {line.text}
           </div>
