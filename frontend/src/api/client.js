@@ -27,6 +27,11 @@ function extractMessage(err) {
   // FastAPI string detail: { detail: "..." }
   if (typeof d.detail === 'string') return d.detail
 
+  // Our custom HTTPException: { detail: { error: "...", code: "..." } }
+  if (typeof d.detail === 'object' && !Array.isArray(d.detail)) {
+    return d.detail.error || d.detail.message || JSON.stringify(d.detail)
+  }
+
   // Our custom error: { error: "...", code: "..." }
   if (typeof d.error === 'string') return d.error
 
