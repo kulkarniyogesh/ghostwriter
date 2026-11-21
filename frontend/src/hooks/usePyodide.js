@@ -61,16 +61,32 @@ export default function usePyodide() {
 
       setOutput([{ type: 'info', text: '$ python main.py' }])
 
-      // Redirect stdout/stderr via sys
+      // Patch input() to return empty string — stdin not available in WebAssembly
       await pyodide.runPythonAsync(`
-import sys
-import io
+import sys, io, builtins
 
-# Capture output
-_stdout_capture = io.StringIO()
-_stderr_capture = io.StringIO()
-sys.stdout = _stdout_capture
-sys.stderr = _stderr_capture
+_stdout_lines = []
+_stderr_lines = []
+
+class _Capture(io.StringIO):
+    def __init__(self, store):
+        super().__init__()
+        self._store = store
+    def write(self, s):
+        if s and s != '\\n':
+            self._store.append(s)
+        return len(s)
+
+sys.stdout = _Capture(_stdout_lines)
+sys.stderr = _Capture(_stderr_lines)
+
+# Replace input() so interactive programs don't crash
+_original_input = builtins.input
+def _safe_input(prompt=''):
+    if prompt:
+        _stdout_lines.append(str(prompt))
+    return ''
+builtins.input = _safe_input
       `)
 
       // Run the user code
@@ -81,22 +97,22 @@ sys.stderr = _stderr_capture
       }
 
       // Collect captured output
-      const stdout = await pyodide.runPythonAsync('_stdout_capture.getvalue()')
-      const stderr = await pyodide.runPythonAsync('_stderr_capture.getvalue()')
+      const stdoutLines = await pyodide.runPythonAsync('list(_stdout_lines)')
+      const stderrLines = await pyodide.runPythonAsync('list(_stderr_lines)')
 
-      if (stdout) {
-        stdout.split('\n').filter(Boolean).forEach((line) =>
-          setOutput((prev) => [...prev, { type: 'stdout', text: line }])
-        )
-      }
-      if (stderr) {
-        stderr.split('\n').filter(Boolean).forEach((line) =>
-          setOutput((prev) => [...prev, { type: 'stderr', text: line }])
-        )
-      }
+      stdoutLines.toJs().forEach((line) =>
+        setOutput((prev) => [...prev, { type: 'stdout', text: line }])
+      )
+      stderrLines.toJs().forEach((line) =>
+        setOutput((prev) => [...prev, { type: 'stderr', text: line }])
+      )
 
-      // Reset stdout/stderr
-      await pyodide.runPythonAsync('sys.stdout = sys.__stdout__; sys.stderr = sys.__stderr__')
+      // Reset
+      await pyodide.runPythonAsync(`
+sys.stdout = sys.__stdout__
+sys.stderr = sys.__stderr__
+builtins.input = _original_input
+      `)
 
       setOutput((prev) => [
         ...prev,
