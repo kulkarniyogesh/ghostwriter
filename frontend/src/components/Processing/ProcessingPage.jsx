@@ -4,6 +4,7 @@ import FileTreeBuilder from './FileTreeBuilder'
 import ErrorMessage from '../shared/ErrorMessage'
 import useMigration from '../../hooks/useMigration'
 import { fetchRepo } from '../../api/client'
+import Logo from '../shared/Logo'
 
 const STAGES = [
   { id: 'fetch', title: 'Read repository', desc: 'Fetching files from GitHub' },
@@ -113,12 +114,7 @@ export default function ProcessingPage({ repoUrl, onComplete, onError }) {
 
       {/* Nav */}
       <nav className="relative z-10 w-full px-6 sm:px-10 py-4 flex items-center justify-between border-b border-white/5">
-        <div className="flex items-center gap-2">
-          <span className="text-2xl">👻</span>
-          <span className="font-bold text-[#E8E8E8] tracking-tight text-lg">
-            Ghost<span className="text-[#00D4FF]">Writer</span>
-          </span>
-        </div>
+        <Logo size="nav" />
         <button onClick={() => onError('cancelled')}
           className="text-xs text-[#8892A4] hover:text-[#FF4D6D] transition-colors">
           Cancel
@@ -168,8 +164,8 @@ export default function ProcessingPage({ repoUrl, onComplete, onError }) {
                   return (
                     <li key={stage.id} className="flex items-start gap-3">
                       <div className={`w-6 h-6 rounded-full shrink-0 flex items-center justify-center text-xs border ${state === 'done' ? 'bg-[#00FF88]/15 border-[#00FF88]/40 text-[#00FF88]'
-                          : state === 'active' ? 'border-[#00D4FF] text-[#00D4FF]'
-                            : 'border-white/10 text-[#8892A4]/50'
+                        : state === 'active' ? 'border-[#00D4FF] text-[#00D4FF]'
+                          : 'border-white/10 text-[#8892A4]/50'
                         }`}>
                         {state === 'done' ? '✓'
                           : state === 'active'

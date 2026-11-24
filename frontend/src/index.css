@@ -30,6 +30,31 @@ code, pre, .mono {
   font-family: 'JetBrains Mono', 'Fira Code', monospace;
 }
 
+/* Logo animations */
+@keyframes gw-float {
+  0%, 100% { transform: translateY(0) rotate(-2deg); }
+  50% { transform: translateY(-8px) rotate(2deg); }
+}
+
+@keyframes gw-glow {
+  0%, 100% { opacity: 0.35; transform: scale(0.9); }
+  50% { opacity: 0.8; transform: scale(1.15); }
+}
+
+@keyframes gw-blink {
+  0%, 92%, 100% { transform: scaleY(1); }
+  96% { transform: scaleY(0.1); }
+}
+
+.gw-float { animation: gw-float 4s ease-in-out infinite; }
+.gw-glow { animation: gw-glow 4s ease-in-out infinite; }
+.gw-blink { animation: gw-blink 5s ease-in-out infinite; }
+
+/* Respect the user's reduced-motion setting */
+@media (prefers-reduced-motion: reduce) {
+  .gw-float, .gw-glow, .gw-blink { animation: none; }
+}
+
 /* Scrollbar */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: var(--bg-secondary); }
